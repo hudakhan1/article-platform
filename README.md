@@ -49,13 +49,3 @@ This project was developed to understand full-stack web development, including f
 - Handling user interactions like likes and comments  
 
 
-
-##  Future Improvements
-
-- User authentication (login/signup system)  
-- Profile pages for users  
-- Image upload for articles  
-- Better security and validation  
-- Improved UI/UX design  
-- Deployment on cloud hosting platform  
-
