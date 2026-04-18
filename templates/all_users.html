@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}All Users{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+  <!-- Page Heading -->
+  <div class="text-center mb-8 animate-fade-in">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+      <i class="fas fa-users text-cyan-500 mr-3"></i>All Users
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400">Send a request to start chatting</p>
+  </div>
+
+  <!-- Users List -->
+  <div class="max-w-lg mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden animate-slide-up">
+    {% for user in users %}
+    <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700 transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-750">
+      <!-- Profile and Name -->
+      <div class="flex items-center gap-4 flex-1 min-w-0">
+        <div class="relative">
+          <img src="{{ url_for('static', filename=user.profile_pic.replace('static/', '').replace('\\', '/')) }}"
+               alt="Profile Picture"
+               class="w-14 h-14 rounded-full object-cover border-2 border-cyan-400 shadow-md">
+
+        </div>
+        <div class="flex-1 min-w-0">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">{{ user.name }}</h2>
+
+          </p>
+        </div>
+      </div>
+
+      <!-- Request to Chat Button -->
+      {% if session['uid'] != user.uid %}
+      <form action="{{ url_for('send_chat_request', receiver_uid=user.uid) }}" method="POST" class="ml-4">
+        <button type="submit"
+                class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-4 py-2.5 rounded-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg flex items-center group">
+          <i class="fas fa-user-plus mr-2"></i>
+          <span>Request</span>
+          <i class="fas fa-paper-plane ml-2 text-xs group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </form>
+      {% else %}
+      <div class="ml-4 px-3 py-2 text-cyan-500 border border-cyan-400 rounded-lg">
+        <i class="fas fa-user mr-1"></i> You
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-12 px-6 animate-pulse-slow">
+      <div class="mx-auto w-20 h-20 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center mb-4">
+        <i class="fas fa-user-slash text-cyan-500 text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No users found</h3>
+      <p class="text-gray-500 dark:text-gray-400">There are no other users in the system yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 2s infinite;
+  }
+
+  .bg-gray-750 {
+    background-color: #374151;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .flex.items-center.justify-between {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    form.ml-4, div.ml-4 {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    form.ml-4 button, div.ml-4 {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .flex.items-center.gap-4 {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .text-3xl {
+      font-size: 1.5rem;
+    }
+
+    .p-6 {
+      padding: 1rem;
+    }
+
+    .w-14.h-14 {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Messenger{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+  <!-- Heading -->
+  <div class="text-center mb-8 animate-fade-in">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+      <i class="fas fa-comments text-cyan-500 mr-3"></i>Messenger
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400">Start chatting with your friends</p>
+  </div>
+
+  <!-- Users List -->
+  <div class="max-w-2xl mx-auto space-y-4">
+    {% for user in users %}
+    <div class="flex items-center bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border border-gray-100 dark:border-gray-700">
+      <!-- Profile Image with Online Status -->
+      <div class="relative mr-4">
+        <img src="{{ url_for('static', filename=user.profile_pic.replace('static/', '').replace('\\','/')) }}"
+             alt="Profile"
+             class="w-14 h-14 rounded-full object-cover border-2 border-cyan-400 shadow-sm">
+
+      </div>
+
+      <!-- User Info -->
+      <div class="flex-1 min-w-0">
+        <h2 class="font-semibold text-gray-800 dark:text-gray-200 truncate">{{ user.name }}</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+
+        </p>
+      </div>
+
+      <!-- Chat Button -->
+      <a href="{{ url_for('chat_room', other_uid=user.uid) }}"
+         class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-5 py-2.5 rounded-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg flex items-center group">
+        <i class="fas fa-comment-dots mr-2"></i>
+        <span>Chat</span>
+        <i class="fas fa-arrow-right ml-2 text-xs group-hover:translate-x-1 transition-transform"></i>
+      </a>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-12 px-6 bg-white dark:bg-gray-800 rounded-xl shadow-md animate-pulse-slow">
+      <div class="mx-auto w-20 h-20 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center mb-4">
+        <i class="fas fa-user-friends text-cyan-500 text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No contacts yet</h3>
+      <p class="text-gray-500 dark:text-gray-400">Connect with other users to start chatting.</p>
+      <a href="{{ url_for('all_users') }}" class="inline-block mt-4 text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors">
+        <i class="fas fa-search mr-2"></i>Discover users
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Floating Action Button for Mobile -->
+  <div class="fixed bottom-6 right-6 md:hidden">
+    <a href="{{ url_for('all_users') }}" class="w-14 h-14 bg-cyan-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-110">
+      <i class="fas fa-search-plus text-xl"></i>
+    </a>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 2s infinite;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .flex.items-center {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .relative.mr-4 {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+
+    .flex-1 {
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .flex-1 h2,
+    .flex-1 p {
+      text-align: center;
+    }
+
+    a.bg-gradient-to-r {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .text-3xl {
+      font-size: 1.5rem;
+    }
+
+    .p-6 {
+      padding: 1rem;
+    }
+
+    .w-14.h-14 {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+</style>
+{% endblock %}

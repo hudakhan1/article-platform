@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with {{ other_user.name }}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col bg-gray-50 dark:bg-gray-900 min-h-screen w-full">
+
+  <!-- Chat Header -->
+  <div class="p-4 bg-white dark:bg-gray-800 shadow-md flex items-center gap-4 border-b border-gray-200 dark:border-gray-700">
+    <a href="{{ url_for('messenger') }}" class="text-gray-600 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-300">
+      <i class="fas fa-arrow-left text-xl"></i>
+    </a>
+    <img src="{{ url_for('static', filename=other_user.profile_pic.replace('static/', '').replace('\\','/')) }}"
+         alt="{{ other_user.name }}"
+         class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400">
+    <div>
+      <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ other_user.name }}</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+
+        <span id="typingIndicator" class="hidden">typing...</span>
+
+      </p>
+    </div>
+  </div>
+
+  <!-- Messages Container -->
+  <div id="messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 space-y-3">
+    <!-- Messages will be loaded here -->
+    <div class="text-center py-8 text-gray-500 dark:text-gray-400 animate-pulse">
+      <i class="fas fa-comments text-4xl mb-2 text-cyan-500"></i>
+      <p>Loading messages...</p>
+    </div>
+  </div>
+
+  <!-- Send Form -->
+  <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <form id="sendForm" class="flex items-center gap-2">
+      <div class="flex-1 relative">
+        <input id="messageInput" type="text" placeholder="Type a message..."
+               class="w-full border border-gray-300 dark:border-gray-600 rounded-full px-4 py-3 pr-10 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+        <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-cyan-500">
+          <i class="fas fa-paperclip"></i>
+        </button>
+      </div>
+      <button type="submit" class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-3 rounded-full hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-md">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const roomId = "{{ room_id }}";
+  const currentUser = "{{ uid }}";
+  const otherUserId = "{{ other_user.uid }}";
+  let isTyping = false;
+  let typingTimer;
+
+  // Load messages with better formatting
+  function loadMessages() {
+    fetch(`/get_messages/${roomId}`)
+      .then(res => res.json())
+      .then(data => {
+        let messagesDiv = document.getElementById("messages");
+
+        // Clear loading state if it exists
+        if (messagesDiv.innerHTML.includes('fa-comments')) {
+          messagesDiv.innerHTML = "";
+        }
+
+        data.messages.forEach((msg, index) => {
+          const isCurrentUser = msg.sender === currentUser;
+          const alignment = isCurrentUser ? "justify-end" : "justify-start";
+          const bubbleColor = isCurrentUser ?
+            "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white" :
+            "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600";
+
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `flex ${alignment} mb-3 animate-message-in`;
+          messageDiv.innerHTML = `
+            <div class="max-w-xs lg:max-w-md">
+              <div class="${bubbleColor} px-4 py-3 rounded-2xl shadow-sm ${isCurrentUser ? 'rounded-br-none' : 'rounded-bl-none'}">
+                <p class="break-words">${msg.text}</p>
+              </div>
+              <div class="flex items-center mt-1 ${isCurrentUser ? 'justify-end' : 'justify-start'} space-x-2">
+                <small class="text-xs text-gray-500 dark:text-gray-400">${msg.timestamp}</small>
+                ${isCurrentUser ? `
+                  <small class="text-xs ${msg.seen ? 'text-cyan-500' : 'text-gray-400'}">
+                    ${msg.seen ? '<i class="fas fa-check-double"></i>' : '<i class="fas fa-check"></i>'}
+                  </small>
+                ` : ''}
+              </div>
+            </div>
+          `;
+
+          // Only add if this message doesn't exist yet
+          if (!document.querySelector(`[data-message-id="${data.keys[index]}"]`)) {
+            messageDiv.setAttribute('data-message-id', data.keys[index]);
+            messagesDiv.appendChild(messageDiv);
+          }
+        });
+
+        // Scroll to bottom
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        // Mark received messages as seen
+        data.keys.forEach((key, i) => {
+          let msg = data.messages[i];
+          if (msg.sender !== currentUser && !msg.seen) {
+            fetch(`/mark_seen/${roomId}/${key}`, { method: "POST" });
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading messages:', error);
+      });
+  }
+
+  // Send message
+  document.getElementById("sendForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const text = document.getElementById("messageInput").value.trim();
+    if (!text) return;
+
+    fetch(`/send_message/${roomId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(() => {
+      document.getElementById("messageInput").value = "";
+      loadMessages();
+    });
+  });
+
+  // Typing indicator
+  const messageInput = document.getElementById("messageInput");
+  messageInput.addEventListener('input', () => {
+    if (!isTyping) {
+      isTyping = true;
+      // Simulate typing indicator - you'd need socket.io for real implementation
+      document.getElementById('typingIndicator').classList.remove('hidden');
+      document.getElementById('onlineStatus').classList.add('hidden');
+    }
+
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+      isTyping = false;
+      document.getElementById('typingIndicator').classList.add('hidden');
+      document.getElementById('onlineStatus').classList.remove('hidden');
+    }, 1000);
+  });
+
+  // Auto refresh messages
+  setInterval(loadMessages, 1500);
+
+  // Initial load
+  setTimeout(loadMessages, 300);
+</script>
+
+<style>
+  @keyframes messageIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .animate-message-in {
+    animation: messageIn 0.3s ease-out;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Custom scrollbar for messages */
+  #messages::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #messages::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  #messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .dark #messages::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .dark #messages::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .flex.items-center.gap-4 {
+      gap: 0.75rem;
+    }
+
+    #messageInput {
+      padding-right: 2.5rem;
+    }
+
+    .max-w-xs {
+      max-width: 16rem;
+    }
+  }
+</style>
+{% endblock %}

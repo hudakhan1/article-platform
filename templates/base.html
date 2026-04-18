@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}ArticleHub{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Tailwind Dark Mode Config
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyan: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 2s infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #00e6e6, #0066cc);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .sidebar-item {
+      transition: all 0.3s ease;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(0, 230, 230, 0.1);
+      transform: translateX(5px);
+    }
+
+    .toggle-switch {
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch:checked {
+      background: linear-gradient(90deg, #00e6e6, #0066cc);
+    }
+
+    .hamburger-line {
+      transition: all 0.3s ease;
+    }
+
+    .menu-open .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .menu-open .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-open .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 10px;
+      height: 10px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-white min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white px-6 py-4 flex justify-between items-center shadow-lg relative z-50">
+    <!-- Hamburger -->
+    <button id="menu-btn" class="flex flex-col justify-center items-center w-10 h-10 focus:outline-none group">
+      <span class="hamburger-line bg-white w-6 h-0.5 mb-1.5 transition-all"></span>
+      <span class="hamburger-line bg-white w-6 h-0.5 mb-1.5 transition-all"></span>
+      <span class="hamburger-line bg-white w-6 h-0.5 transition-all"></span>
+    </button>
+
+    <div class="font-bold text-xl flex items-center">
+      <i class="fas fa-book-open mr-2 text-cyan-200"></i>
+      <span class="bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">ArticleHub</span>
+    </div>
+
+    <ul class="hidden md:flex space-x-6 items-center">
+      <li class="relative">
+        <a href="{{ url_for('user_dashboard') }}" class="nav-link flex items-center">
+          <i class="fas fa-home mr-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="relative">
+        <a href="{{ url_for('all_users') }}" class="nav-link flex items-center">
+          <i class="fas fa-users mr-2"></i> Users
+        </a>
+      </li>
+      <li class="relative">
+        <a href="{{ url_for('message_requests') }}" class="nav-link flex items-center">
+          <i class="fas fa-envelope mr-2"></i> Message requests
+
+        </a>
+      </li>
+      <li class="relative">
+        <a href="{{ url_for('messenger') }}" class="nav-link flex items-center">
+          <i class="fas fa-comments mr-2"></i> Messenger
+        </a>
+      </li>
+    </ul>
+
+    <!-- Mobile menu button -->
+    <div class="md:hidden">
+      <button id="mobile-menu-btn" class="text-xl focus:outline-none">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu dropdown (for small screens) -->
+  <div id="mobile-menu" class="hidden absolute top-16 right-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 z-50 w-48">
+    <a href="{{ url_for('user_dashboard') }}" class="block py-2 px-4 hover:bg-cyan-50 dark:hover:bg-gray-700 rounded transition">
+      <i class="fas fa-home mr-2"></i> Dashboard
+    </a>
+    <a href="{{ url_for('all_users') }}" class="block py-2 px-4 hover:bg-cyan-50 dark:hover:bg-gray-700 rounded transition">
+      <i class="fas fa-users mr-2"></i> Users
+    </a>
+    <a href="{{ url_for('message_requests') }}" class="block py-2 px-4 hover:bg-cyan-50 dark:hover:bg-gray-700 rounded transition">
+      <i class="fas fa-envelope mr-2"></i> Message requests
+    </a>
+    <a href="{{ url_for('messenger') }}" class="block py-2 px-4 hover:bg-cyan-50 dark:hover:bg-gray-700 rounded transition">
+      <i class="fas fa-comments mr-2"></i> Messenger
+    </a>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar"
+       class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-2xl
+              transform -translate-x-full transition-transform duration-300 ease-in-out z-40
+              flex flex-col">
+    <div class="p-6 flex-1">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-xl font-bold text-cyan-600 dark:text-cyan-400">
+          <i class="fas fa-bars mr-2"></i> Menu
+        </h2>
+        <button id="close-sidebar" class="text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <a href="{{ url_for('my_profile') }}" class="sidebar-item flex items-center text-gray-700 dark:text-gray-200 font-medium">
+        <i class="fas fa-user-circle mr-3 text-cyan-600 dark:text-cyan-400"></i>
+        My Profile
+      </a>
+
+      <!-- Dark Mode Toggle -->
+      <div class="flex items-center justify-between mb-6 mt-8 sidebar-item">
+        <div class="flex items-center">
+          <i class="fas fa-moon mr-3 text-cyan-600 dark:text-cyan-400"></i>
+          <span class="text-gray-700 dark:text-gray-200 font-medium">Dark Mode</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="darkToggle" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-cyan-600 transition toggle-switch"></div>
+          <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-5 transition-transform"></span>
+        </label>
+      </div>
+
+      <!-- ✅ Active Status Toggle -->
+      <div class="flex items-center justify-between mb-6 sidebar-item">
+        <div class="flex items-center">
+          <i class="fas fa-circle mr-3 text-green-500"></i>
+          <span class="text-gray-700 dark:text-gray-200 font-medium">Active Status</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="statusToggle" class="sr-only peer"
+                 {% if user.show_status %}checked{% endif %}>
+          <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-green-500 transition toggle-switch"></div>
+          <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-5 transition-transform"></span>
+        </label>
+      </div>
+
+      <!-- Logout -->
+      <a href="{{ url_for('logout') }}" class="sidebar-item flex items-center text-red-600 dark:text-red-400 font-medium mt-8">
+        <i class="fas fa-sign-out-alt mr-3"></i>
+        Logout
+      </a>
+    </div>
+
+
+
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 transition-opacity duration-300"></div>
+
+  <!-- Page Content -->
+  <!-- Content -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const closeSidebar = document.getElementById('close-sidebar');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    // Sidebar toggle
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      sidebar.classList.toggle('translate-x-0');
+      overlay.classList.toggle('hidden');
+      menuBtn.classList.toggle('menu-open');
+      document.body.classList.toggle('overflow-hidden');
+    });
+
+    // Close sidebar when close button is clicked
+    closeSidebar.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      sidebar.classList.remove('translate-x-0');
+      overlay.classList.add('hidden');
+      menuBtn.classList.remove('menu-open');
+      document.body.classList.remove('overflow-hidden');
+    });
+
+    // Close sidebar when overlay is clicked
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      sidebar.classList.remove('translate-x-0');
+      overlay.classList.add('hidden');
+      menuBtn.classList.remove('menu-open');
+      document.body.classList.remove('overflow-hidden');
+    });
+
+    // Mobile menu toggle
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
+    // Dark Mode Toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const html = document.documentElement;
+
+    // Load preference
+    if (localStorage.getItem('theme') === 'dark') {
+      html.classList.add('dark');
+      darkToggle.checked = true;
+    }
+
+    darkToggle.addEventListener('change', () => {
+      if (darkToggle.checked) {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // ✅ Active Status Toggle
+    const statusToggle = document.getElementById('statusToggle');
+    if (statusToggle) {
+      statusToggle.addEventListener('change', () => {
+        const isActive = statusToggle.checked;
+
+        fetch('/toggle_status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ show_status: isActive })
+        }).then(res => res.json()).then(data => {
+          console.log("Status updated:", data);
+        });
+      });
+    }
+
+    // Close sidebar when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+        overlay.classList.add('hidden');
+        menuBtn.classList.remove('menu-open');
+        document.body.classList.remove('overflow-hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>

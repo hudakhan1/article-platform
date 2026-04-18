@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About ArticleHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    .feature-card {
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 230, 230, 0.15);
+    }
+
+    .gradient-text {
+      background: linear-gradient(45deg, #00e6e6, #0066cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white px-6 py-4 flex justify-between items-center shadow-lg">
+    <div class="font-bold text-xl flex items-center">
+      <i class="fas fa-book-open mr-2"></i>
+      <span class="bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">ArticleHub</span>
+    </div>
+    <a href="{{ url_for('user_login') }}" class="bg-white text-cyan-600 font-semibold px-5 py-2.5 rounded-lg hover:bg-cyan-50 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg flex items-center">
+      <i class="fas fa-sign-in-alt mr-2"></i> Login / Signup
+    </a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="py-16 px-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white">
+    <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Welcome to ArticleHub</h1>
+      <p class="text-xl md:text-2xl mb-8 opacity-90 animate-fade-in delay-100">Where ideas are shared, knowledge grows, and communities connect</p>
+      <div class="animate-float animate-fade-in delay-200">
+        <i class="fas fa-feather-alt text-5xl opacity-80"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Purpose Section -->
+  <section class="py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4 animate-fade-in">Our Purpose</h2>
+        <div class="w-20 h-1 bg-cyan-500 mx-auto mb-6 animate-fade-in delay-100"></div>
+        <p class="text-gray-600 text-lg leading-relaxed animate-fade-in delay-200">
+          ArticleHub is built to provide a space where users can write, share, and explore articles
+          on different topics. We believe in the power of words to inspire, educate, and connect people
+          across the globe.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-xl shadow-md animate-fade-in delay-300">
+          <div class="w-14 h-14 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-lightbulb text-cyan-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-3">Foster Creativity</h3>
+          <p class="text-gray-600">We provide a platform for writers to express their ideas and creativity without boundaries.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-md animate-fade-in delay-400">
+          <div class="w-14 h-14 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-users text-cyan-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-3">Build Community</h3>
+          <p class="text-gray-600">Connect with like-minded individuals who share your interests and passions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-16 px-4 bg-white bg-opacity-70">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4 animate-fade-in">What We Offer</h2>
+        <div class="w-20 h-1 bg-cyan-500 mx-auto mb-6 animate-fade-in delay-100"></div>
+        <p class="text-gray-600 text-lg animate-fade-in delay-200">Discover the features that make ArticleHub unique</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-300">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-edit text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Write Articles</h3>
+          <p class="text-gray-600 text-sm">Create and publish your own articles on any topic.</p>
+        </div>
+
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-350">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-heart text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Like & Comment</h3>
+          <p class="text-gray-600 text-sm">Engage with content through likes and comments.</p>
+        </div>
+
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-400">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-share-alt text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Share Content</h3>
+          <p class="text-gray-600 text-sm">Share interesting articles with your network.</p>
+        </div>
+
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-450">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-user-friends text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Build Profile</h3>
+          <p class="text-gray-600 text-sm">Create a personalized profile showcasing your work.</p>
+        </div>
+
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-500">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-comments text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Messaging</h3>
+          <p class="text-gray-600 text-sm">Connect with other users through private messaging.</p>
+        </div>
+
+        <div class="feature-card bg-white p-6 rounded-xl shadow-md animate-fade-in delay-550">
+          <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-image text-cyan-600"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Media Support</h3>
+          <p class="text-gray-600 text-sm">Enhance articles with images and videos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Section -->
+  <section class="py-16 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4 animate-fade-in">Join Our Community</h2>
+      <div class="w-20 h-1 bg-cyan-500 mx-auto mb-6 animate-fade-in delay-100"></div>
+      <p class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto animate-fade-in delay-200">
+        Whether you want to share your knowledge, express your creativity, or simply read and explore
+        interesting content, ArticleHub is designed for you.
+      </p>
+
+      <div class="bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-xl p-8 text-white shadow-lg max-w-2xl mx-auto animate-fade-in delay-300">
+        <h3 class="text-2xl font-bold mb-4">Start your journey today</h3>
+        <p class="mb-6 opacity-90">Become a part of our growing community of writers and readers.</p>
+        <a href="{{ url_for('user_login') }}" class="inline-block bg-white text-cyan-600 font-semibold px-6 py-3 rounded-lg hover:bg-cyan-50 transition-all duration-300 transform hover:-translate-y-1 shadow-md">
+          <i class="fas fa-user-plus mr-2"></i> Sign Up Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white py-8 px-4 mt-auto">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="text-cyan-100">© 2023 ArticleHub. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

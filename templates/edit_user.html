@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen text-white">
+
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-[400px]">
+    <h2 class="text-2xl font-bold mb-6 text-center">Edit Profile</h2>
+
+    <form action="/edit_user" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+
+      <!-- Profile Picture -->
+      <label class="text-sm text-gray-300">Upload New Profile Picture</label>
+      <input type="file" name="profile_pic" class="p-2 rounded bg-gray-700 text-sm">
+
+      <!-- Name -->
+      <input type="text" name="name" placeholder="New Name"
+             value="{{ user.name if user and user.name }}"
+             class="p-2 rounded bg-gray-700 focus:outline-none">
+
+      <!-- Email -->
+      <input type="email" name="email" placeholder="New Email"
+             value="{{ user.email if user and user.email }}"
+             class="p-2 rounded bg-gray-700 focus:outline-none">
+
+      <!-- Password -->
+      <input type="password" name="password" placeholder="New Password"
+             class="p-2 rounded bg-gray-700 focus:outline-none">
+
+      <!-- Buttons -->
+      <div class="flex justify-between mt-4">
+        <button type="reset" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">Cancel</button>
+        <button type="submit" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600">Save</button>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>
